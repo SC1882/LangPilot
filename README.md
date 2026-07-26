@@ -8,7 +8,7 @@ LangPilot is a free, open-source macOS menu-bar utility that fixes text entered 
 keyboard layout and offers local spelling suggestions. It currently supports Russian, English,
 and German.
 
-![LangPilot settings on macOS](docs/images/langpilot-settings.jpg)
+![LangPilot settings on macOS](https://github.com/SC1882/LangPilot/releases/download/v2.0.0-beta.2/langpilot-settings.jpg)
 
 - Automatic keyboard-layout detection and correction
 - Local spelling suggestions with Tab to accept and Esc to dismiss
