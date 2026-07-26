@@ -2,7 +2,9 @@
 
 **Smart typing across languages.**
 
-LangPilot is a private, open-source macOS menu-bar utility that fixes text entered with the wrong
+[Download LangPilot](https://github.com/SC1882/LangPilot/releases/latest) · [Support the project](https://buymeacoffee.com/sc_lab)
+
+LangPilot is a free, open-source macOS menu-bar utility that fixes text entered with the wrong
 keyboard layout and offers local spelling suggestions. It currently supports Russian, English,
 and German.
 
@@ -15,9 +17,13 @@ and German.
 
 Copyright © 2026 [SC1882](https://github.com/SC1882). Licensed under GPL-3.0-only.
 
+If LangPilot makes your daily typing easier, you can support its development:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-Support_LangPilot-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=000000)](https://buymeacoffee.com/sc_lab)
+
 ## Installation
 
-Download the latest DMG from GitHub Releases, drag LangPilot to Applications, then open it using
+Download the latest DMG from [GitHub Releases](https://github.com/SC1882/LangPilot/releases), drag LangPilot to Applications, then open it using
 **Control-click → Open**. Because this independent build is not Apple-notarized, macOS may show a
 Gatekeeper warning. Grant Accessibility and Input Monitoring access when requested.
 
