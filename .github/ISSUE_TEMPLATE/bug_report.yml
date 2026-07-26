@@ -1,0 +1,22 @@
+name: Bug report
+description: Report an incorrect layout or spelling correction
+body:
+  - type: input
+    attributes:
+      label: Typed text
+      description: What appeared before LangPilot changed it?
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Expected text
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: macOS and LangPilot versions
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional context
