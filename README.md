@@ -31,6 +31,36 @@ Download the latest DMG from [GitHub Releases](https://github.com/SC1882/LangPil
 **Control-click → Open**. Because this independent build is not Apple-notarized, macOS may show a
 Gatekeeper warning. Grant Accessibility and Input Monitoring access when requested.
 
+## Privacy and permissions
+
+LangPilot is designed as a local-only typing helper. It does not use accounts, analytics, network
+requests, cloud processing, or uploaded text.
+
+macOS may ask for these permissions:
+
+- **Accessibility** — lets LangPilot detect the focused text field, place suggestions near the text
+  cursor, and apply accepted corrections.
+- **Input Monitoring** — lets LangPilot observe keyboard input system-wide so it can detect wrong
+  keyboard-layout text and trigger shortcuts.
+- **Launch at Login** — optional; controlled from LangPilot settings.
+
+Password and secure fields are ignored. When macOS reports the focused field as a secure text field,
+LangPilot skips detection, correction, spelling suggestions, and learning for that field.
+
+Learned word pairs, rejected corrections, and settings are stored locally in macOS UserDefaults for
+the app bundle (`local.langpilot.app`). The learning data uses the `learning.v1` key and normally
+lives inside your user Library preferences. Full typed phrases are not stored.
+
+You can view learned word pairs or reset all learning from **Settings → Learning**. Export is not
+implemented yet; for now, reset is the supported data-control action.
+
+## Compatibility
+
+LangPilot should work in many standard macOS text fields, browsers, and Electron apps. Some apps may
+behave differently if they use custom text rendering, protected input, remote desktops, virtual
+machines, games, or terminal-style input. If an app does not work well with LangPilot, add it to
+**Settings → Privacy → Excluded applications**.
+
 ## Build
 
 ```bash
@@ -41,18 +71,14 @@ open dist/LangPilot.app
 
 Requires Xcode 26 or newer.
 
-- `⌥⌘L` — исправить последнее слово вручную.
-- `⌥⌘Z` — отменить последнюю замену.
-- Меню `ЯA` — включить или приостановить автоматическую коррекцию.
-- **Звук при переключении** в меню `ЯA` — включить или выключить короткий сигнал смены раскладки.
-- **Запускать вместе с macOS** — управляет системным Login Item; при первом запуске включается автоматически.
-- **Орфография** — варианты показываются возле текстового курсора; `Tab` принимает вариант, `Esc` скрывает его, `⌥⌘S` остаётся глобальной командой.
-  Подсказка видна 8 секунд и умеет безопасно исправить предыдущее слово, даже если ввод уже продолжился.
+## Shortcuts and learning
 
-Автоматически исправляются только слова с высокой уверенностью; остальные можно обучить вручную.
+- `⌥⌘L` — manually fix the last word.
+- `⌥⌘Z` — undo the last replacement.
+- Menu-bar `ЯA` icon — enable or pause automatic correction.
+- Sound notification — optional short sound when the keyboard layout changes.
+- Spelling suggestions appear near the text cursor; `Tab` accepts a suggestion and `Esc` dismisses it.
 
-## Самообучение
-
-Дважды исправленное вручную слово запоминается и дальше исправляется автоматически. Отмена через `⌥⌘Z`
-обучает приложение больше не выполнять эту замену. Модель хранит локально только пары слов и счётчики —
-полные фразы и содержимое приложений не записываются.
+Automatic corrections are applied only when confidence is high. Manual corrections can teach
+LangPilot your vocabulary over time. If you undo a replacement with `⌥⌘Z`, LangPilot learns to avoid
+that replacement in the future.
