@@ -2,7 +2,6 @@
 
 **Smart typing across languages.**
 
-[![Total downloads](https://img.shields.io/github/downloads/SC1882/LangPilot/total?style=for-the-badge&label=Downloads&color=2ea44f)](https://github.com/SC1882/LangPilot/releases)
 [![GitHub stars](https://img.shields.io/github/stars/SC1882/LangPilot?style=for-the-badge&label=Stars&color=blue)](https://github.com/SC1882/LangPilot/stargazers)
 
 [Download LangPilot](https://github.com/SC1882/LangPilot/releases/latest) · [Support the project](https://buymeacoffee.com/sc_lab)
