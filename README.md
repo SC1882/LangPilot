@@ -6,6 +6,9 @@
 
 [Download LangPilot](https://github.com/SC1882/LangPilot/releases/latest) · [Support the project](https://buymeacoffee.com/sc_lab)
 
+**Latest:** LangPilot 2.0 Beta 3 adds local export/import for learned word pairs. See
+[CHANGELOG.md](CHANGELOG.md) for release history.
+
 LangPilot is a free, open-source macOS menu-bar utility that fixes text entered with the wrong
 keyboard layout and offers local spelling suggestions. It currently supports Russian, English,
 and German.
