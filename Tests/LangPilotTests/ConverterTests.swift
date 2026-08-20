@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import LangPilot
 
@@ -17,4 +18,29 @@ import Testing
     #expect(Converter.suggestion(for: "pf")?.0 == "за")
     #expect(Converter.swap(",hfn") == "брат")
     #expect(Converter.suggestion(for: "github") == nil)
+}
+
+@MainActor
+@Test func exportsAndImportsLearning() throws {
+    UserDefaults.standard.removeObject(forKey: "learning.v1")
+    let store = LearningStore()
+    store.recordAccepted(original: "ghbdtn", replacement: "привет")
+    store.recordAccepted(original: "ghbdtn", replacement: "привет")
+
+    let data = try store.exportData()
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    let decoded = try decoder.decode(LearningStore.ExportFile.self, from: data)
+    #expect(decoded.version == 1)
+    #expect(decoded.pairs.count == 1)
+    #expect(decoded.pairs.first?.original == "ghbdtn")
+    #expect(decoded.pairs.first?.replacement == "привет")
+    #expect(decoded.pairs.first?.accepted == 2)
+
+    UserDefaults.standard.removeObject(forKey: "learning.v1")
+    let imported = LearningStore()
+    let importedCount = try imported.importData(data)
+    #expect(importedCount == 1)
+    #expect(imported.shouldApply(original: "ghbdtn", replacement: "привет"))
+    UserDefaults.standard.removeObject(forKey: "learning.v1")
 }

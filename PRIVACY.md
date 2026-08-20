@@ -25,8 +25,8 @@ UserDefaults for the `local.langpilot.app` bundle. The current learning key is `
 
 Full typed phrases, passwords, and text field contents are not stored.
 
-You can view learned word pairs and reset all learning in **Settings → Learning**. Export is not
-implemented yet.
+You can view, export, import, or reset learned word pairs in **Settings → Learning**. Export creates
+a local JSON file and does not send data anywhere.
 
 ## Password and secure fields
 

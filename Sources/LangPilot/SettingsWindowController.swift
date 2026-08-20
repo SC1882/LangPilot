@@ -102,10 +102,18 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
 
     private func learningView() -> NSView {
         let viewButton = NSButton(title: "View learned word pairs", target: self, action: #selector(viewLearning))
+        let exportButton = NSButton(title: "Export learning…", target: self, action: #selector(exportLearning))
+        let importButton = NSButton(title: "Import learning…", target: self, action: #selector(importLearning))
         let reset = NSButton(title: "Reset all learning…", target: self, action: #selector(resetLearning))
         reset.contentTintColor = .systemRed
+        let importExport = NSStackView()
+        importExport.orientation = .horizontal
+        importExport.spacing = 10
+        importExport.addArrangedSubview(exportButton)
+        importExport.addArrangedSubview(importButton)
         return page("Learning", subtitle: "Manual corrections and undo actions help LangPilot adapt to your vocabulary.",
-                    controls: [learnedCount, viewButton, reset])
+                    controls: [learnedCount, viewButton, importExport, reset,
+                               note("Export creates a local JSON file. Import merges learned pairs without sending anything to a server.")])
     }
 
     private func privacyView() -> NSView {
@@ -165,7 +173,7 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         soundCheckbox.state = monitor.soundEnabled ? .on : .off
         launchCheckbox.state = SMAppService.mainApp.status == .enabled ? .on : .off
         exclusions = monitor.excludedBundleIDs
-        learnedCount.stringValue = "\(monitor.learnedEntries().count) learned word pairs"
+        updateLearnedCount()
     }
 
     @objc private func save() {
@@ -222,6 +230,45 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         showAlert("Learned word pairs", detail: entries.isEmpty ? "No custom pairs yet." : entries.joined(separator: "\n"))
     }
 
+    @objc private func exportLearning() {
+        let panel = NSSavePanel()
+        panel.title = "Export LangPilot learning"
+        panel.nameFieldStringValue = "LangPilot-Learning.json"
+        panel.allowedContentTypes = [.json]
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            let data = try monitor.exportLearningData()
+            try data.write(to: url, options: .atomic)
+            showAlert("Learning exported", detail: "Saved \(monitor.learnedEntries().count) learned word pairs to:\n\(url.path)")
+        } catch {
+            showAlert("Could not export learning", detail: error.localizedDescription)
+        }
+    }
+
+    @objc private func importLearning() {
+        let panel = NSOpenPanel()
+        panel.title = "Import LangPilot learning"
+        panel.allowedContentTypes = [.json]
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        let alert = NSAlert()
+        alert.messageText = "Import learned word pairs?"
+        alert.informativeText = "LangPilot will merge this file with your current learning data. Existing stronger corrections will be kept."
+        alert.addButton(withTitle: "Import")
+        alert.addButton(withTitle: "Cancel")
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let imported = try monitor.importLearningData(data)
+            updateLearnedCount()
+            showAlert("Learning imported", detail: "Imported \(imported) learned word pairs.")
+        } catch {
+            showAlert("Could not import learning", detail: error.localizedDescription)
+        }
+    }
+
     @objc private func resetLearning() {
         let alert = NSAlert()
         alert.messageText = "Reset all learned words?"
@@ -230,7 +277,12 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         alert.addButton(withTitle: "Cancel")
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         monitor.resetLearning()
-        learnedCount.stringValue = "0 learned word pairs"
+        updateLearnedCount()
+    }
+
+    private func updateLearnedCount() {
+        let count = monitor.learnedEntries().count
+        learnedCount.stringValue = count == 1 ? "1 learned word pair" : "\(count) learned word pairs"
     }
 
     private func showAlert(_ title: String, detail: String) {

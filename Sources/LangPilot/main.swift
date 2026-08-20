@@ -107,6 +107,19 @@ enum SpellingMode: String, CaseIterable {
 /// never surrounding text or application contents.
 @MainActor
 final class LearningStore {
+    struct ExportFile: Codable {
+        struct Pair: Codable {
+            var original: String
+            var replacement: String
+            var accepted: Int
+            var rejected: Int
+        }
+
+        var version: Int
+        var exportedAt: Date
+        var pairs: [Pair]
+    }
+
     private struct Record: Codable {
         var accepted = 0
         var rejected = 0
@@ -153,9 +166,57 @@ final class LearningStore {
         }
     }
 
+    func exportData() throws -> Data {
+        let pairs = records.keys.sorted().compactMap { key -> ExportFile.Pair? in
+            let parts = key.components(separatedBy: "\u{1f}")
+            guard parts.count == 2, let record = records[key] else { return nil }
+            return ExportFile.Pair(original: parts[0], replacement: parts[1],
+                                   accepted: record.accepted, rejected: record.rejected)
+        }
+        let file = ExportFile(version: 1, exportedAt: Date(), pairs: pairs)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+        return try encoder.encode(file)
+    }
+
+    @discardableResult
+    func importData(_ data: Data) throws -> Int {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let file = try decoder.decode(ExportFile.self, from: data)
+        guard file.version == 1 else { throw ImportError.unsupportedVersion(file.version) }
+
+        var imported = 0
+        for pair in file.pairs {
+            let original = pair.original.trimmingCharacters(in: .whitespacesAndNewlines)
+            let replacement = pair.replacement.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !original.isEmpty, !replacement.isEmpty else { continue }
+            let key = makeKey(original, replacement)
+            var record = records[key, default: Record()]
+            record.accepted = max(record.accepted, pair.accepted)
+            record.rejected = max(record.rejected, pair.rejected)
+            records[key] = record
+            imported += 1
+        }
+        save()
+        return imported
+    }
+
     func reset() {
         records.removeAll()
         UserDefaults.standard.removeObject(forKey: defaultsKey)
+    }
+
+    enum ImportError: LocalizedError {
+        case unsupportedVersion(Int)
+
+        var errorDescription: String? {
+            switch self {
+            case .unsupportedVersion(let version):
+                return "Unsupported LangPilot learning export version: \(version)"
+            }
+        }
     }
 
     private func makeKey(_ original: String, _ replacement: String) -> String {
@@ -316,6 +377,9 @@ final class InputMonitor {
     }
 
     func learnedEntries() -> [String] { learning.entries() }
+    func exportLearningData() throws -> Data { try learning.exportData() }
+    @discardableResult
+    func importLearningData(_ data: Data) throws -> Int { try learning.importData(data) }
     func resetLearning() { learning.reset() }
 
     private func completeWord(trailing: String) {

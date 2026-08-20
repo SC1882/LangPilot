@@ -15,6 +15,7 @@ and German.
 - Automatic keyboard-layout detection and correction
 - Local spelling suggestions with Tab to accept and Esc to dismiss
 - Personal learning from manual corrections and undo actions
+- Export and import learned word pairs as a local JSON file
 - Secure-field protection and per-application exclusions
 - Launch at login and native macOS settings
 - No accounts, analytics, network requests, or uploaded text
@@ -51,8 +52,8 @@ Learned word pairs, rejected corrections, and settings are stored locally in mac
 the app bundle (`local.langpilot.app`). The learning data uses the `learning.v1` key and normally
 lives inside your user Library preferences. Full typed phrases are not stored.
 
-You can view learned word pairs or reset all learning from **Settings → Learning**. Export is not
-implemented yet; for now, reset is the supported data-control action.
+You can view, export, import, or reset learned word pairs from **Settings → Learning**. Export creates
+a local JSON file that you can keep as a backup or move to another Mac.
 
 ## Compatibility
 
