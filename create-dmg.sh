@@ -1,7 +1,7 @@
 #!/bin/zsh
 set -euo pipefail
 ROOT="${0:A:h}"
-VERSION="${1:-2.0-beta.2}"
+VERSION="${1:-2.0-beta.3}"
 STAGE="$ROOT/.build/dmg-root"
 OUT="$ROOT/dist/LangPilot-$VERSION.dmg"
 mkdir -p "$STAGE/.background"
